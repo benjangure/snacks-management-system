@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin: 10px 0; }
+        input, select { padding: 8px; margin: 5px; width: 200px; }
+        button { padding: 10px 15px; margin: 10px 0; }
+        .result { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Test Registration with Username</h1>
+    
+    <form id="testForm">
+        <div class="form-group">
+            <label>Name:</label><br>
+            <input type="text" id="name" placeholder="Full Name" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Email:</label><br>
+            <input type="email" id="email" placeholder="Email" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Username:</label><br>
+            <input type="text" id="username" placeholder="Username">
+        </div>
+        
+        <div class="form-group">
+            <label>Password:</label><br>
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Role:</label><br>
+            <select id="role" required>
+                <option value="">Select Role</option>
+                <option value="buyer">Buyer</option>
+                <option value="seller">Seller</option>
+            </select>
+        </div>
+        
+        <button type="submit">Register</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                password_confirmation: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+            
+            console.log('Sending data:', formData);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Registering...</p>';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                console.log('Response:', data);
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Registration Successful!</h3>
+                            <p><strong>Name:</strong> ${data.user.name}</p>
+                            <p><strong>Email:</strong> ${data.user.email}</p>
+                            <p><strong>Username:</strong> ${data.user.username}</p>
+                            <p><strong>Role:</strong> ${data.user.role}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Registration Failed</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Network Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

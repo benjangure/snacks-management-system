@@ -1,0 +1,93 @@
+# ===== LARAVEL BACKEND =====
+mandazi-backend/vendor/
+mandazi-backend/node_modules/
+mandazi-backend/.env
+mandazi-backend/.env.backup
+mandazi-backend/.env.production
+mandazi-backend/.phpunit.result.cache
+mandazi-backend/Homestead.json
+mandazi-backend/Homestead.yaml
+mandazi-backend/auth.json
+mandazi-backend/npm-debug.log
+mandazi-backend/yarn-error.log
+mandazi-backend/storage/*.key
+mandazi-backend/storage/app/*
+!mandazi-backend/storage/app/.gitkeep
+mandazi-backend/storage/framework/cache/*
+!mandazi-backend/storage/framework/cache/.gitkeep
+mandazi-backend/storage/framework/sessions/*
+!mandazi-backend/storage/framework/sessions/.gitkeep
+mandazi-backend/storage/framework/testing/*
+!mandazi-backend/storage/framework/testing/.gitkeep
+mandazi-backend/storage/framework/views/*
+!mandazi-backend/storage/framework/views/.gitkeep
+mandazi-backend/storage/logs/*
+!mandazi-backend/storage/logs/.gitkeep
+mandazi-backend/bootstrap/cache/*
+!mandazi-backend/bootstrap/cache/.gitkeep
+mandazi-backend/public/hot
+mandazi-backend/public/storage
+mandazi-backend/storage/app/public/*
+!mandazi-backend/storage/app/public/.gitkeep
+
+# ===== FRONTEND =====
+mandazi-frontend/node_modules/
+mandazi-frontend/dist/
+mandazi-frontend/.cache/
+mandazi-frontend/.parcel-cache/
+
+# ===== SYSTEM FILES =====
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ===== IDE FILES =====
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
+
+# ===== WINDOWS =====
+*.bat.bak
+*.cmd.bak
+
+# ===== SENSITIVE DATA =====
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+credentials.json
+
+# ===== TESTING =====
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+.pytest_cache/
+.phpunit.result.cache
+
+# ===== DEPLOYMENT =====
+deploy.php
+.deployer/
+.env.production
+.env.staging
+
+# ===== BACKUP FILES =====
+*.backup
+*.bak
+*.orig
+*.rej

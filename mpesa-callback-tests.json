@@ -1,0 +1,101 @@
+{
+  "info": {
+    "name": "M-Pesa Callback Tests",
+    "description": "Collection of M-Pesa callback test scenarios for Mandazi System",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Success Callback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"Body\": {\n    \"stkCallback\": {\n      \"MerchantRequestID\": \"29115-34620561-1\",\n      \"CheckoutRequestID\": \"ws_CO_28102025160000000001\",\n      \"ResultCode\": 0,\n      \"ResultDesc\": \"The service request is processed successfully.\",\n      \"CallbackMetadata\": {\n        \"Item\": [\n          {\"Name\": \"Amount\", \"Value\": 100.00},\n          {\"Name\": \"MpesaReceiptNumber\", \"Value\": \"NLJ7RT61SV\"},\n          {\"Name\": \"TransactionDate\", \"Value\": 20251028160000},\n          {\"Name\": \"PhoneNumber\", \"Value\": 254705445261}\n        ]\n      }\n    }\n  }\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/mpesa/callback",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8001",
+          "path": ["api", "mpesa", "callback"]
+        }
+      }
+    },
+    {
+      "name": "Failed Callback - User Cancelled",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"Body\": {\n    \"stkCallback\": {\n      \"MerchantRequestID\": \"29115-34620561-2\",\n      \"CheckoutRequestID\": \"ws_CO_28102025160000000002\",\n      \"ResultCode\": 1032,\n      \"ResultDesc\": \"Request cancelled by user\"\n    }\n  }\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/mpesa/callback",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8001",
+          "path": ["api", "mpesa", "callback"]
+        }
+      }
+    },
+    {
+      "name": "Timeout Callback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"Body\": {\n    \"stkCallback\": {\n      \"MerchantRequestID\": \"29115-34620561-3\",\n      \"CheckoutRequestID\": \"ws_CO_28102025160000000003\",\n      \"ResultCode\": 1037,\n      \"ResultDesc\": \"DS timeout user cannot be reached\"\n    }\n  }\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/mpesa/callback",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8001",
+          "path": ["api", "mpesa", "callback"]
+        }
+      }
+    },
+    {
+      "name": "Test Helper Endpoint",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"test\": \"callback\"}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/test/callback/ws_CO_28102025160000000001",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8001",
+          "path": ["api", "test", "callback", "ws_CO_28102025160000000001"]
+        }
+      }
+    }
+  ]
+}

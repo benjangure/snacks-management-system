@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-Pesa Callback Tester</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .test-card { background: rgba(255,255,255,0.95); border-radius: 15px; }
+        .json-display { background: #f8f9fa; border-radius: 8px; font-family: 'Courier New', monospace; }
+        .btn-test { margin: 5px; }
+    </style>
+</head>
+<body class="d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card test-card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-mobile-alt me-2"></i>M-Pesa Callback API Tester</h4>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Quick Test Buttons -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-rocket me-2"></i>Quick Tests</h5>
+                                <button class="btn btn-success btn-test" onclick="testSuccessCallback()">
+                                    <i class="fas fa-check-circle me-1"></i>Test Success Callback
+                                </button>
+                                <button class="btn btn-danger btn-test" onclick="testFailedCallback()">
+                                    <i class="fas fa-times-circle me-1"></i>Test Failed Callback
+                                </button>
+                                <button class="btn btn-warning btn-test" onclick="testTimeoutCallback()">
+                                    <i class="fas fa-clock me-1"></i>Test Timeout Callback
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-cog me-2"></i>Settings</h5>
+                                <div class="mb-2">
+                                    <label class="form-label">API URL:</label>
+                                    <input type="text" class="form-control form-control-sm" id="apiUrl" value="http://127.0.0.1:8001/api/mpesa/callback">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Checkout Request ID:</label>
+                                    <input type="text" class="form-control form-control-sm" id="checkoutRequestId" value="ws_CO_28102025160000000001">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Callback Editor -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-edit me-2"></i>Custom Callback JSON</h5>
+                                <textarea class="form-control json-display" id="callbackJson" rows="20" placeholder="Edit the JSON payload here..."></textarea>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary" onclick="sendCustomCallback()">
+                                        <i class="fas fa-paper-plane me-1"></i>Send Custom Callback
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="formatJson()">
+                                        <i class="fas fa-code me-1"></i>Format JSON
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-terminal me-2"></i>Response Log</h5>
+                                <div class="json-display p-3" id="responseLog" style="height: 400px; overflow-y: auto;">
+                                    <em class="text-muted">Response will appear here...</em>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="clearLog()">
+                                        <i class="fas fa-trash me-1"></i>Clear Log
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample callback payloads
+        const sampleCallbacks = {
+            success: {
+                "Body": {
+                    "stkCallback": {
+                        "MerchantRequestID": "29115-34620561-1",
+                        "CheckoutRequestID": "ws_CO_28102025160000000001",
+                        "ResultCode": 0,
+                        "ResultDesc": "The service request is processed successfully.",
+                        "CallbackMetadata": {
+                            "Item": [
+                                {"Name": "Amount", "Value": 1.00},
+                                {"Name": "MpesaReceiptNumber", "Value": "NLJ7RT61SV"},
+                                {"Name": "TransactionDate", "Value": 20251028160000},
+                                {"Name": "PhoneNumber", "Value": 254705445261}
+                            ]
+                        }
+                    }
+                }
+            },
+            failed: {
+                "Body": {
+                    "stkCallback": {
+                        "MerchantRequestID": "29115-34620561-2",
+                        "CheckoutRequestID": "ws_CO_28102025160000000002",
+                        "ResultCode": 1032,
+                        "ResultDesc": "Request cancelled by user"
+                    }
+                }
+            },
+            timeout: {
+                "Body": {
+                    "stkCallback": {
+                        "MerchantRequestID": "29115-34620561-3",
+                        "CheckoutRequestID": "ws_CO_28102025160000000003",
+                        "ResultCode": 1037,
+                        "ResultDesc": "DS timeout user cannot be reached"
+                    }
+                }
+            }
+        };
+
+        // Initialize with success callback
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('callbackJson').value = JSON.stringify(sampleCallbacks.success, null, 2);
+        });
+
+        async function sendCallback(payload) {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const timestamp = new Date().toLocaleTimeString();
+            
+            try {
+                logResponse(`[${timestamp}] 🚀 Sending callback to: ${apiUrl}`);
+                logResponse(`[${timestamp}] 📦 Payload: ${JSON.stringify(payload, null, 2)}`);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const responseData = await response.text();
+                
+                if (response.ok) {
+                    logResponse(`[${timestamp}] ✅ Success (${response.status}): ${responseData}`, 'success');
+                } else {
+                    logResponse(`[${timestamp}] ❌ Error (${response.status}): ${responseData}`, 'error');
+                }
+                
+            } catch (error) {
+                logResponse(`[${timestamp}] 💥 Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testSuccessCallback() {
+            const checkoutId = document.getElementById('checkoutRequestId').value;
+            const payload = { ...sampleCallbacks.success };
+            payload.Body.stkCallback.CheckoutRequestID = checkoutId;
+            sendCallback(payload);
+        }
+
+        function testFailedCallback() {
+            const checkoutId = document.getElementById('checkoutRequestId').value;
+            const payload = { ...sampleCallbacks.failed };
+            payload.Body.stkCallback.CheckoutRequestID = checkoutId;
+            sendCallback(payload);
+        }
+
+        function testTimeoutCallback() {
+            const checkoutId = document.getElementById('checkoutRequestId').value;
+            const payload = { ...sampleCallbacks.timeout };
+            payload.Body.stkCallback.CheckoutRequestID = checkoutId;
+            sendCallback(payload);
+        }
+
+        function sendCustomCallback() {
+            try {
+                const jsonText = document.getElementById('callbackJson').value;
+                const payload = JSON.parse(jsonText);
+                sendCallback(payload);
+            } catch (error) {
+                logResponse(`❌ Invalid JSON: ${error.message}`, 'error');
+            }
+        }
+
+        function formatJson() {
+            try {
+                const jsonText = document.getElementById('callbackJson').value;
+                const parsed = JSON.parse(jsonText);
+                document.getElementById('callbackJson').value = JSON.stringify(parsed, null, 2);
+            } catch (error) {
+                logResponse(`❌ Cannot format JSON: ${error.message}`, 'error');
+            }
+        }
+
+        function logResponse(message, type = 'info') {
+            const log = document.getElementById('responseLog');
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                info: '#17a2b8'
+            };
+            
+            const div = document.createElement('div');
+            div.style.color = colors[type] || colors.info;
+            div.style.marginBottom = '8px';
+            div.style.borderLeft = `3px solid ${colors[type] || colors.info}`;
+            div.style.paddingLeft = '8px';
+            div.textContent = message;
+            
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('responseLog').innerHTML = '<em class="text-muted">Response will appear here...</em>';
+        }
+
+        // Load sample callbacks into editor
+        function loadSample(type) {
+            document.getElementById('callbackJson').value = JSON.stringify(sampleCallbacks[type], null, 2);
+        }
+    </script>
+</body>
+</html>
