@@ -1,6 +1,6 @@
-# 🍞 Mandazi Management System
+# 🍞 Snacks Management System
 
-A modern web application for managing mandazi orders with integrated M-Pesa payments. Built with Laravel backend and vanilla JavaScript frontend.
+A modern web application for managing snacks orders with integrated M-Pesa payments. Built with Laravel backend and vanilla JavaScript frontend.
 
 ![Mandazi System](https://img.shields.io/badge/Laravel-11-red?style=flat-square&logo=laravel)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?style=flat-square&logo=javascript)
