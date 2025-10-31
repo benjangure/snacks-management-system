@@ -258,8 +258,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- GitHub: [benjangure](https://github.com/benjangure)
+- Email:ngurebenjamin5@gmail.com
 
 ## 🙏 Acknowledgments
 
@@ -272,7 +272,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you encounter any issues:
 
-1. Check the [Issues](https://github.com/yourusername/mandazi-management-system/issues) page
+1. Check the [Issues](https://github.com/benjangure/mandazi-management-system/issues) page
 2. Run the system status checker: `check-system.bat`
 3. Review the troubleshooting guide in `SETUP-GUIDE.md`
 4. Create a new issue with detailed information
